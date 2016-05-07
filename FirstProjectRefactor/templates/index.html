@@ -2,7 +2,8 @@
 
 {% block content %}
 
-    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group">
+    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"
+          xmlns="http://www.w3.org/1999/html">
         {% csrf_token %}
 
         <textarea type="text" name="post_text" style="width: 100%;height: 200px;padding:16px;"></textarea>
@@ -20,7 +21,7 @@
     {% if latest_post_list %}
 {#        <ul >#}
             {% for post in latest_post_list %}
-                <div style="outline: dashed;">
+                <div style="outline: dashed; margin: 16px; padding: 16px">
                     {#                        -----------------------------------------------------------------------------#}
 
                     <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
@@ -35,13 +36,14 @@
                     <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
                         {% csrf_token %}
 
-                        <input type="button"
-                               id="show_change_post{{ post.id }}"
-                               value="Change post"
-                               class="btn btn-primary"
-                               onclick="showDiv({{ post.id }})"
-                        />
-                        <span class="label label-default">Default</span>
+{#                        <input type="button"#}
+{#                               id="show_change_post{{ post.id }}"#}
+{#                               value="Change post"#}
+{#                               class="btn btn-primary"#}
+{#                               onclick="showDiv({{ post.id }})"#}
+{#                        >#}
+                        <span class="label label-primary" onclick="showDiv({{ post.id }})">Change</span>
+                        </input>
 
                         <div id="div_change_post{{ post.id }}" style="display:none;">
 
