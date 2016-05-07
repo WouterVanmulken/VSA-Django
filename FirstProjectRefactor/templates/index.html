@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group">
+        {% csrf_token %}
+
+        <textarea type="text" name="post_text" style="width: 100%;height: 200px;padding:16px;"></textarea>
+        <br/>
+        <div>
+            <input type="file" name="myfile" class="file-upload"
+                   style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px"/>
+            <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
+        </div>
+    </form>
+
+    <br/>
+    <br/>
+
+    {% if latest_post_list %}
+{#        <ul >#}
+            {% for post in latest_post_list %}
+                <div style="outline: dashed;">
+                    {#                        -----------------------------------------------------------------------------#}
+
+                    <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
+                        {% csrf_token %}
+                        <p>{{ post.poster }} --
+                        {{ post.pub_date }}
+
+                        <input type="submit" value="X" class="btn btn-danger" style="margin-left:15px; float: right"/>
+                        </p>
+                    </form>
+
+                    <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
+                        {% csrf_token %}
+
+                        <input type="button"
+                               id="show_change_post{{ post.id }}"
+                               value="Change post"
+                               class="btn btn-primary"
+                               onclick="showDiv({{ post.id }})"
+                        />
+                        <span class="label label-default">Default</span>
+
+                        <div id="div_change_post{{ post.id }}" style="display:none;">
+
+                            <textarea type="text" name="change_text{{ post.id }}" style="width: 100%;height: 100px; padding:16px;" >{{ post.text }} </textarea>
+
+                            <input type="submit" value="Change" class="btn btn-danger"/>
+
+                        </div>
+                    </form>
+
+
+                    <p id="post_text{{ post.id }}">{{ post.text }}</p><br/>
+                    {#                        -----------------------------------------------------------------------------#}
+                </div>
+
+            {% endfor %}
+{#        </ul>#}
+
+    {% else %}
+        <p>No posts were available.</p>
+    {% endif %}
+
+    <script>
+        function showDiv(a) {
+            document.getElementById('post_text'+a).style.display = "none";
+            document.getElementById('div_change_post' + a).style.display = "block";
+            document.getElementById('show_change_post' + a).style.display = "none";
+
+        }
+    </script>
+{% endblock %}
