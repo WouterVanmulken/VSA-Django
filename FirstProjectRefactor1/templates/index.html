@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"
+          xmlns="http://www.w3.org/1999/html">
+        {% csrf_token %}
+
+        <textarea type="text" name="post_text" style="width: 100%;height: 200px;padding:16px;"></textarea>
+        <br/>
+        <div>
+            <input type="file" name="myfile" class="file-upload"
+                   style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px"/>
+            <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
+        </div>
+    </form>
+
+    <br/>
+    <br/>
+
+    {% if latest_post_list %}
+        {#        <ul >#}
+        {% for post in latest_post_list %}
+            {#                <div style="outline: dashed; margin: 16px; padding: 16px">#}
+            <div class="MessageLayout" style="">
+                {#                        -----------------------------------------------------------------------------#}
+
+                <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
+                    {% csrf_token %}
+                    {#                    <div style="clear: both">#}
+                    <h5 style="float: left">{{ post.poster }}</h5>
+                    <input type="submit" value="X" class="btn btn-danger" style="margin-left:15px; float: right"/>
+
+                    {#                    </div>#}
+                    {#                    <hr/>#}
+
+
+                </form>
+
+                <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
+                    {% csrf_token %}
+
+                    {#                        <input type="button"#}
+                    {#                               id="show_change_post{{ post.id }}"#}
+                    {#                               value="Change post"#}
+                    {#                               class="btn btn-primary"#}
+                    {#                               onclick="showDiv({{ post.id }})"#}
+                    {#                        >#}
+                    <span class="label label-primary" onclick="showDiv({{ post.id }})">Change</span>
+                    </input>
+
+                    <div id="div_change_post{{ post.id }}" style="display:none;">
+
+                        <textarea type="text" name="change_text{{ post.id }}"
+                                  style="width: 100%;height: 100px; padding:16px;">{{ post.text }} </textarea>
+
+                        <input type="submit" value="Change" class="btn btn-danger"/>
+
+                    </div>
+                </form>
+
+
+                <h6 id="post_text{{ post.id }}">{{ post.text }}</h6><br/>
+                <h7 style="float: right">{{ post.pub_date }}</h7>
+
+                {#                        -----------------------------------------------------------------------------#}
+            </div>
+
+        {% endfor %}
+        {#        </ul>#}
+
+    {% else %}
+        <p>No posts were available.</p>
+    {% endif %}
+
+    <script>
+        function showDiv(a) {
+            document.getElementById('post_text' + a).style.display = "none";
+            document.getElementById('div_change_post' + a).style.display = "block";
+            document.getElementById('show_change_post' + a).style.display = "none";
+
+        }
+    </script>
+    <style>
+        .MessageLayout {
+            background-color: #ffe7d9;
+            border-color: #ddc8bc;
+            border-width: 1px;
+            border-radius: 4px 4px 0px 0px;
+            box-shadow: none;
+            position: relative;
+            padding: 45px 15px;
+            margin: 0px -5px 15px 0px;
+        {#        border-color: #EEE #EEE;#}
+            /*border: solid;*/
+            /*borde h x;
+            shadow: 0px 3p 6px 0, 0.05) in et;*/
+            -sizing: border-box;
+            font-family: Helvetica;
+        }
+    </style>
+{% endblock %}
