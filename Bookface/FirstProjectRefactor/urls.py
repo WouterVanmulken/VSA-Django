@@ -2,12 +2,13 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import patterns, include, url
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import static as static
 
 from FirstProjectRefactor import views as views
 
 app_name = 'FirstProjectRefactor'
-urlpatterns = [
+
+urlpatterns2 = [
 
     url(r'^admin$', admin.site.urls, name='admin'),
     url(r'^new_post/', views.new_post, name='new_post'),
@@ -18,9 +19,14 @@ urlpatterns = [
     url(r'^registration$', views.registration.as_view(), name='registration'),
     url(r'^registration/post$', views.register, name='registration_post'),
 
-    url(r'^list/$', views.list, name='list'),
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    url(r'^list$', views.list, name='list'),
 
     url(r'^', views.index.as_view(), name='index'),
 ]
+
+urlpatterns = patterns('',
+    (r'^', include(urlpatterns2)),
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 

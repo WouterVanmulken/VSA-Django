@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django import forms
 
-from .models import Post
+from .models import Post, Document
 import logging
 
 from django.shortcuts import render, get_object_or_404
@@ -25,12 +25,12 @@ class index(generic.ListView):
     template_name = '../../Bookface/templates/index.html'
     context_object_name = 'latest_post_list'
 
-    # def get_queryset(self):
-    #     page = 1
-    #     return Post.objects.order_by('-pub_date')[:page * items_per_page]
     def get_queryset(self):
         page = 1
-        return
+        return Post.objects.order_by('-pub_date')[:page * items_per_page]
+    # def get_queryset(self):
+    #     page = 1
+    #     return
 
 
 class login_page(TemplateView):
@@ -50,23 +50,31 @@ def login_post(self):
 
 def new_post(self):
     text = self.POST['post_text']
-    # uploaded_file = self.FILES['myfile']
+    poster = self.user
 
-    # poster = Person(first_name="wouter", last_name="vanmulken")
-    # poster = User(first_name="wouter", last_name="vanmulken", )//Todo fix this
-    # poster.save()
-    # poster.refresh_from_db()
-    # filename ="" #Todo save the file
+    if self.method == 'POST' and self.FILES['docfile'] is not None:
+        form = DocumentForm(self.POST, self.FILES)
+        if form.is_valid():
+            newdoc = Document(docfile=self.FILES['docfile'])
+            newdoc.save()
+            p = Post(poster=poster, text=text, file=newdoc.docfile.__str__())
+            p.save()
+            # Redirect to the document list after POST
+            return HttpResponseRedirect(reverse('list'))
+    else:
+        form = DocumentForm()  # A empty, unbound form
+        p = Post(poster=poster, text=text)
+        p.save()
 
+    # Load documents for the list page
+    documents = Document.objects.all()
 
-    # if uploaded_file is not None:
-    #   p = Post(poster=poster, text=text, file=filename)
-    # else:
-    # p = Post(poster=poster, text=text)//Todo fix this
-    # p.save()
-    return HttpResponseRedirect(reverse('index'))
-
-
+    # Render list page with the documents and the form
+    return render_to_response(
+        'list.html',
+        {'documents': documents, 'form': form},
+        context_instance=RequestContext(request)
+    )
 
 
 class DocumentForm(forms.Form):
@@ -76,9 +84,9 @@ class DocumentForm(forms.Form):
     )
 from django.db import models
 
-
-class Document(models.Model):
-    docfile = models.FileField(upload_to='documents/%Y/%m/%d')
+#
+# class Document(models.Model):
+#     docfile = models.FileField(upload_to='documents/%Y/%m/%d')
 
 
 def del_post(self, post_id):
