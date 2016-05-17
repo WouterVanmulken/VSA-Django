@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{#    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"#}
+    {#    <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"#}
     <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"
           xmlns="http://www.w3.org/1999/html">
         {% csrf_token %}
@@ -10,8 +10,12 @@
         <textarea type="text" name="post_text" style="width: 100%;height: 200px;padding:16px;"></textarea>
         <br/>
         <div>
-            <input type="file" name="docfile" class="file-upload"
-                   style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px"/>
+            {#            <input type="file" name="docfile" class="file-upload"#}
+            {#                   style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px"/>#}
+            <p style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px">
+                {#                {{ form.docfile.errors }}#}
+                {{ form.docfile }}
+            </p>
             <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
         </div>
     </form>
@@ -21,18 +25,21 @@
 
     {% if latest_post_list %}
         {% for post in latest_post_list %}
-            <div>
+            <div style="padding: 16px;">
                 <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
                     {% csrf_token %}
-                    <h5 style="float: left">{{ post.poster }}</h5>
-                    <input type="submit" value="X" class="btn btn-danger" style="margin-left:15px; float: right"/>
+                    {% load staticfiles %}
+
+                    <img src="{% static "test.png" %}" width="50px" height="50px" class="pull-left pad" />
+                    <h5 class="pull-left">{{ post.poster }}</h5>
+                    <input type="submit" value="X" class="btn btn-danger pull-right" />
                 </form>
 
                 <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
                     {% csrf_token %}
+                    <br/>
+                    <br/>
                     <span class="label label-primary" onclick="showDiv({{ post.id }})">Change</span>
-                    </input>
-
                     <div id="div_change_post{{ post.id }}" style="display:none;">
 
                         <textarea type="text" name="change_text{{ post.id }}"
@@ -42,7 +49,7 @@
                 </form>
 
                 <h6 id="post_text{{ post.id }}">{{ post.text }}</h6><br/>
-                <h7 style="float: right">{{ post.pub_date }}</h7>
+                <h7 class="pull-right">{{ post.pub_date }}</h7>
             </div>
 
         {% endfor %}
@@ -52,28 +59,16 @@
 
     <script>
         function showDiv(a) {
-            document.getElementById('post_text' + a).style.display = "none";
-            document.getElementById('div_change_post' + a).style.display = "block";
-            document.getElementById('show_change_post' + a).style.display = "none";
+            if(document.getElementById('div_change_post' + a).style.display != "block") {
 
+                document.getElementById('post_text' + a).style.display = "none";
+                document.getElementById('div_change_post' + a).style.display = "block";
+                document.getElementById('show_change_post' + a).style.display = "none";
+            }else{
+                document.getElementById('post_text' + a).style.display = "block";
+                document.getElementById('div_change_post' + a).style.display = "none";
+                document.getElementById('show_change_post' + a).style.display = "block";
+            }
         }
     </script>
-{#    <style>#}
-{#        .MessageLayout {#}
-{#            background-color: #ffe7d9;#}
-{#            border-color: #ddc8bc;#}
-{#            border-width: 1px;#}
-{#            border-radius: 4px 4px 0px 0px;#}
-{#            box-shadow: none;#}
-{#            position: relative;#}
-{#            padding: 45px 15px;#}
-{#            margin: 0px -5px 15px 0px;#}
-        {#        border-color: #EEE #EEE;#}
-{#            /*border: solid;*/#}
-{#            /*borde h x;#}
-{#            shadow: 0px 3p 6px 0, 0.05) in et;*/#}
-{#            -sizing: border-box;#}
-{#            font-family: Helvetica;#}
-{#        }#}
-{#    </style>#}
 {% endblock %}

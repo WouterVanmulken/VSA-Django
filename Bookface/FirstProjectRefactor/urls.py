@@ -3,14 +3,15 @@ from django.contrib import admin
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.conf.urls.static import static as static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from FirstProjectRefactor import views as views
 
 app_name = 'FirstProjectRefactor'
 
-urlpatterns2 = [
+urlpatterns = [
 
-    url(r'^admin$', admin.site.urls, name='admin'),
+    url(r'^admin', admin.site.urls, name='admin'),
     url(r'^new_post/', views.new_post, name='new_post'),
     url(r'^(?P<post_id>[0-9]+)/del_post/$', views.del_post, name='del_post'),
     url(r'^(?P<post_id>[0-9]+)/change_post/$', views.change_post, name='change_post'),
@@ -23,10 +24,8 @@ urlpatterns2 = [
 
     url(r'^', views.index.as_view(), name='index'),
 ]
-
-urlpatterns = patterns('',
-    (r'^', include(urlpatterns2)),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 

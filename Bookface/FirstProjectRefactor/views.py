@@ -6,8 +6,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django import forms
 
-from .models import Post, Document
+from .models import Post, Document, UserInfo
 import logging
+
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+
 
 from django.shortcuts import render, get_object_or_404
 
@@ -27,10 +34,15 @@ class index(generic.ListView):
 
     def get_queryset(self):
         page = 1
+        # form = DocumentForm() # A empty, unbound form
+
         return Post.objects.order_by('-pub_date')[:page * items_per_page]
-    # def get_queryset(self):
-    #     page = 1
-    #     return
+
+    def get_context_data(self, **kwargs):
+        context = super(index, self).get_context_data(**kwargs)
+        context['form'] = DocumentForm()
+
+        return context
 
 
 class login_page(TemplateView):
@@ -52,7 +64,7 @@ def new_post(self):
     text = self.POST['post_text']
     poster = self.user
 
-    if self.method == 'POST' and self.FILES['docfile'] is not None:
+    if self.method == 'POST' and self.FILES['docfile']:
         form = DocumentForm(self.POST, self.FILES)
         if form.is_valid():
             newdoc = Document(docfile=self.FILES['docfile'])
@@ -60,7 +72,7 @@ def new_post(self):
             p = Post(poster=poster, text=text, file=newdoc.docfile.__str__())
             p.save()
             # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('list'))
+            return HttpResponseRedirect(reverse('index'))
     else:
         form = DocumentForm()  # A empty, unbound form
         p = Post(poster=poster, text=text)
@@ -91,8 +103,8 @@ from django.db import models
 
 def del_post(self, post_id):
     post_to_delete = Post.objects.get(pk=post_id)
-
-    post_to_delete.delete()
+    if post_to_delete.poster.pk is self.user:
+        post_to_delete.delete()
 
     return HttpResponseRedirect(reverse('index'))
 
@@ -115,21 +127,20 @@ def register(self):
     user = User.objects.create_user(self.POST['inputName'], self.POST['inputEmail'], self.POST['inputPassword'])
     user.save()
 
+    us = UserInfo()
+    us.user = user
+    us.save()
+
     return HttpResponseRedirect(reverse('login'))
 
+# Todo :
+# - make a friends list html template in which you can search for friends
+# - be able to add extra fields to user
+# - Friend someone
+# - Unfriend someone
+# - Like a post
+# - Comment on a post
 
-
-
-
-
-
-
-
-# -*- coding: utf-8 -*-
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 
 def list(request):
     # Handle file upload

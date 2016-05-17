@@ -24,7 +24,7 @@ class Post(models.Model):
     poster = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
     file = models.CharField(max_length=400)
-    pub_date = models.DateTimeField('date published',default=timezone.now())
+    pub_date = models.DateTimeField('date published', default=timezone.now)
 
     # def __init__(self, poster, text):
     #     self.poster = poster
@@ -36,6 +36,11 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class UserInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    friend_list = models.CommaSeparatedIntegerField(max_length=200)
 
 
 class Document(models.Model):
