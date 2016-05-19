@@ -41,6 +41,7 @@ class Post(models.Model):
 class UserInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     friend_list = models.CommaSeparatedIntegerField(max_length=200)
+    profile_pic = models.CharField(max_length=200, null=True)
 
 
 class Document(models.Model):

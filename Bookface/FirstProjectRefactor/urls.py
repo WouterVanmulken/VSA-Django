@@ -25,6 +25,7 @@ urlpatterns += [
     url(r'^list$', views.list, name='list'),
     url(r'^search$', views.search, name='search'),
     url(r'^friends$', views.friends, name='friends'),
+    url(r'^addfriend/(?P<user_name>[A-Za-z0-9]+)$', views.add_friend, name='add_friend'),
     url(r'^profile/(?P<user_name>[A-Za-z0-9]+)$', views.profile, name='profile'),
 
     url(r'^', views.index.as_view(), name='index'),

@@ -199,10 +199,9 @@ def friends(request):
     )
 
 
-def profile(request, user_name):
+def add_friend(self, user_name):
 
     friend = User.objects.get(username=user_name)
-
     if request.method == 'POST':
         if friend is not None:
             user = request.user
@@ -211,9 +210,26 @@ def profile(request, user_name):
 
             return HttpResponseRedirect(reverse('friends'))
 
+
+def profile(request, user_name):
+
+    friend = User.objects.get(username=user_name)
+
+    if request.method == 'POST' :# and request.user is friend
+            form = DocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                newdoc = Document(docfile=request.FILES['docfile'])
+                newdoc.save()
+                request.user.userinfo.profile_pic = "/media/" + newdoc.docfile.__str__()
+                request.user.userinfo.save()
+            return HttpResponseRedirect(reverse('friends'))
+    # elif request.user is friend:
+    else:
+        form = DocumentForm()
+
     return render_to_response(
         'profile.html',
-        {'user': friend},
+        {'user': friend, 'form':form},
         context_instance=RequestContext(request)
     )
 
