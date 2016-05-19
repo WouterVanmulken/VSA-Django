@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if user %}
+        <ul>
+            <li>{{ user.username }}</li>
+            <li>{{ user.email }}</li>
+            <li>{{ user.first_name }}</li>
+            <li>{{ user.last_name }}</li>
+            <form action="{% url 'profile' user.username %}" method="POST" class="form-group">
+                {% csrf_token %}
+                <input type="submit" value="add friend" class="btn btn-danger pull-right"/>
+            </form>
+
+            <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data" class="form-group"
+                  xmlns="http://www.w3.org/1999/html">
+                {% csrf_token %}
+
+                    <p style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px">
+                        {#                {{ form.docfile.errors }}#}
+                        {{ form.docfile }}
+                    </p>
+                    <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
+                </div>
+            </form>
+            <br/>
+        </ul>
+    {% else %}
+        <p>No person found with this username.</p>
+    {% endif %}
+{% endblock %}

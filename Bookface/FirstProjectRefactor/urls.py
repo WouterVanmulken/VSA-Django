@@ -9,7 +9,9 @@ from FirstProjectRefactor import views as views
 
 app_name = 'FirstProjectRefactor'
 
-urlpatterns = [
+urlpatterns = staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += [
 
     url(r'^admin', admin.site.urls, name='admin'),
     url(r'^new_post/', views.new_post, name='new_post'),
@@ -21,11 +23,9 @@ urlpatterns = [
     url(r'^registration/post$', views.register, name='registration_post'),
 
     url(r'^list$', views.list, name='list'),
+    url(r'^search$', views.search, name='search'),
+    url(r'^friends$', views.friends, name='friends'),
+    url(r'^profile/(?P<user_name>[A-Za-z0-9]+)$', views.profile, name='profile'),
 
     url(r'^', views.index.as_view(), name='index'),
 ]
-urlpatterns += staticfiles_urlpatterns()
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
