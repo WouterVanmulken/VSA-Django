@@ -43,6 +43,12 @@ class UserInfo(models.Model):
     friend_list = models.CommaSeparatedIntegerField(max_length=200)
     profile_pic = models.CharField(max_length=200, null=True)
 
+    def __str__(self):
+        if not self.user.first_name or not self.user.last_name:
+            return self.user.username
+
+        return self.user.first_name + " " + self.user.last_name
+
 
 class Document(models.Model):
     docfile = models.FileField(upload_to='documents/%Y/%m/%d')

@@ -3,27 +3,64 @@
 {% block content %}
 
     {% if user %}
-        <ul>
-            <li>{{ user.username }}</li>
-            <li>{{ user.email }}</li>
-            <li>{{ user.first_name }}</li>
-            <li>{{ user.last_name }}</li>
-            <form action="{% url 'add_friend' user.username %}" method="POST" class="form-group">
-                {% csrf_token %}
-                <input type="submit" value="add friend" class="btn btn-danger pull-right"/>
-            </form>
+        <div style="background: white; padding: 16px">
+            {% if form %}
+                <form action="{% url 'profile' user.username %}" method="POST" enctype="multipart/form-data"
+                      class="form-group">
+                    {% csrf_token %}
+                    <br>
+                    <ul>
+                        <H3>Username</H3>
+                        <input name="username" class="form-control" value="{{ user.username }}"/>
+                        <br/>
+                        <H3>E-mail</H3>
+                        <input name="email" class="form-control" value="{{ user.email }}"/>
+                        <br/>
+                        <H3>First name</H3>
+                        <input name="firstname" class="form-control" value="{{ user.first_name }}"/>
+                        <br/>
+                        <H3>Last name</H3>
+                        <input name="lastname" class="form-control" value="{{ user.last_name }}"/>
+                        <br/>
 
-            <form action="{% url 'profile' user.username %}" method="POST" enctype="multipart/form-data" class="form-group">
-                {% csrf_token %}
-
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
                     <p style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px">
                         {{ form.docfile }}
                     </p>
+
                     <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
-                </div>
-            </form>
+                    <br/>
+
+                </form>
+            {% else %}
+                <form action="{% url 'add_friend' user.username %}" method="POST" class="form-group">
+                    {% csrf_token %}
+                    <ul>
+
+                        <H1>{{ user.username }}</H1>
+                        <br/>
+                        <H5>E-mail : {{ user.email }}</H5>
+                        <br/>
+                        <H5>First Name : {{ user.first_name }}</H5>
+                        <br/>
+                        <H5>Last Name : {{ user.last_name }}</H5>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+
+                    <input type="submit" value="add friend" class="btn btn-danger pull-right pad"/>
+                </form>
+            {% endif %}
             <br/>
-        </ul>
+            <br/>
+            {#        </ul>#}
+        </div>
     {% else %}
         <p>No person found with this username.</p>
     {% endif %}

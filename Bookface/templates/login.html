@@ -2,7 +2,8 @@
 
 {% block content %}
 
-    <div class="container">
+    <div style="background: white; padding: 16px" class="container">
+
 
         <form class="form-signin" action="{% url 'login_post' %}" method="POST">
             {% csrf_token %}
@@ -21,10 +22,11 @@
                     <input type="checkbox" value="remember-me"> Remember me
                 </label>
             </div>
+            <br>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-            <button class="btn btn-lg btn-danger btn-block" href="{% url 'registration' %}">Register</button>
-            <a href="{% url 'registration' %}">Register</a>
         </form>
+        <br>
+        <button class="btn btn-lg btn-danger btn-block" href="{% url 'registration' %}">Register</button>
 
     </div>
 {% endblock %}

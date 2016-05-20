@@ -9,11 +9,13 @@
     {#    <link rel="stylesheet" type="text/css" href="{% static 'bootstrapPaper.css' %}"/>#}
 </head>
 {#<body class="text-center" style="width: 50%; height: 100%; margin-left: 25%">#}
-<body class="container">
+{#<body class="container" style="background: #379494;">#}
+<body class="container" style="background: #E6EDED;">
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">Social Media</a>
+            <a class="navbar-brand" href="{% url 'index' %}">Social Media</a>
+            <button class="navbar-btn btn btn-default" href="{% url 'profile' user.username %}">Settings</button>
         </div>
 
         <form class="navbar-form navbar-right" action="{% url 'search' %}" method="post">
@@ -26,6 +28,10 @@
     </div>
     </div>
 </nav>
+<br/>
+{#<div style="background: white; padding: 16px">#}
+
 {% block content %}{% endblock %}
+{#</div>#}
 </body>
 </html>

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+        <div style="background: white; padding: 16px">
 
    {% if friends %}
         <ul>
@@ -11,4 +12,5 @@
     {% else %}
         <p>No friends.</p>
     {% endif %}
+        </div>
 {% endblock %}

@@ -10,13 +10,11 @@
         <textarea type="text" name="post_text" style="width: 100%;height: 200px;padding:16px;"></textarea>
         <br/>
         <div>
-            {#            <input type="file" name="docfile" class="file-upload"#}
-            {#                   style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px"/>#}
             <p style="float:left; text-align:right; clear:both; margin-top:5px; margin-left:16px">
-                {#                {{ form.docfile.errors }}#}
+                {{ form.docfile.errors }}
                 {{ form.docfile }}
             </p>
-            <input type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
+            <input placeholder="Whatcha thinking ?" type="submit" value="Submit" class="btn btn-primary" style="float:right;"/>
         </div>
     </form>
 
@@ -25,29 +23,35 @@
 
     {% if latest_post_list %}
         {% for post in latest_post_list %}
-            <div style="padding: 16px;">
-                <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
-                    {% csrf_token %}
-                    {% load staticfiles %}
+            <div style="padding: 32px; margin:10px;background: white">
+                <img src="{{ post.poster.userinfo.profile_pic }}" width="50px" height="50px" class="pull-left pad" style="margin: 5px;"/>
+                <h5 class="pull-left">{{ post.poster.userinfo }}</h5>
 
-{#                    <img src="{% static "test.png" %}" width="50px" height="50px" class="pull-left pad" />#}
-                    <img src="{{ post.poster.userinfo.profile_pic  }}" width="50px" height="50px" class="pull-left pad" />
-                    <h5 class="pull-left">{{ post.poster }}</h5>
-                    <input type="submit" value="X" class="btn btn-danger pull-right" />
-                </form>
+                {% if user.id == post.poster.id %}
 
-                <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
-                    {% csrf_token %}
-                    <br/>
-                    <br/>
-                    <span class="label label-primary" onclick="showDiv({{ post.id }})">Change</span>
-                    <div id="div_change_post{{ post.id }}" style="display:none;">
 
+                    <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
+                        {% csrf_token %}
+                        <input type="submit" value="X" class="btn btn-danger pull-right"/>
+                    </form>
+
+                    <form action="{% url 'change_post' post.id %}" method="POST" class="form-group">
+                        {% csrf_token %}
+                        <br/>
+                        <br/>
+                        <span  class="label label-primary" onclick="showDiv({{ post.id }})">Change</span>
+                        <div id="div_change_post{{ post.id }}" style="display:none;">
                         <textarea type="text" name="change_text{{ post.id }}"
                                   style="width: 100%;height: 100px; padding:16px;">{{ post.text }} </textarea>
-                        <input type="submit" value="Change" class="btn btn-danger"/>
-                    </div>
-                </form>
+                            <input type="submit" value="Change" class="btn btn-danger"/>
+                        </div>
+                    </form>
+                {% else %}
+                    <br>
+                    <br>
+                    <br>
+
+                {% endif %}
 
                 <h6 id="post_text{{ post.id }}">{{ post.text }}</h6><br/>
                 <h7 class="pull-right">{{ post.pub_date }}</h7>
@@ -60,12 +64,12 @@
 
     <script>
         function showDiv(a) {
-            if(document.getElementById('div_change_post' + a).style.display != "block") {
+            if (document.getElementById('div_change_post' + a).style.display != "block") {
 
                 document.getElementById('post_text' + a).style.display = "none";
                 document.getElementById('div_change_post' + a).style.display = "block";
                 document.getElementById('show_change_post' + a).style.display = "none";
-            }else{
+            } else {
                 document.getElementById('post_text' + a).style.display = "block";
                 document.getElementById('div_change_post' + a).style.display = "none";
                 document.getElementById('show_change_post' + a).style.display = "block";
