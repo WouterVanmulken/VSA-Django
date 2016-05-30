@@ -6,26 +6,35 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django import forms
 
-from .models import Post, Document, UserInfo
+from .models import Post, Document, UserInfo, Like
 import logging
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.http import JsonResponse
+from django.http import HttpResponse
 
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 logger = logging.getLogger(__name__)
 
 items_per_page = 5
 
 
-def start(self):
-    if not self.user.is_authenticated():
-        return HttpResponseRedirect(reverse('index'))
+#
+# @login_required
+# def start(self):
+#     if not self.user.is_authenticated():
+#         return HttpResponseRedirect(reverse('index'))
 
 
+@login_required
 class Index(generic.ListView):
     template_name = '../../Bookface/templates/index.html'
     context_object_name = 'latest_post_list'
@@ -35,10 +44,35 @@ class Index(generic.ListView):
         return Post.objects.order_by('-pub_date')[:page * items_per_page]
 
     def get_context_data(self, **kwargs):
+        page = 1
         context = super(Index, self).get_context_data(**kwargs)
         context['form'] = DocumentForm()
-
+        likes = []
+        for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
+            if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
+                likes.append(1)
+            else:
+                likes.append(0)
+        context['likes'] = likes
         return context
+
+
+@login_required
+def index2(self):
+    page = 1
+    form = DocumentForm()
+    likes = []
+    for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
+        if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
+            likes.append(1)
+        else:
+            likes.append(0)
+
+    return render_to_response(
+        'index.html',
+        {'form': form, 'likes': likes, 'latest_post_list': Post.objects.order_by('-pub_date')[:page * items_per_page]},
+        context_instance=RequestContext(self)
+    )
 
 
 class login_page(TemplateView):
@@ -56,18 +90,19 @@ def login_post(self):
         return HttpResponseRedirect(reverse('login'))
 
 
+@login_required
 def new_post(self):
     text = self.POST['post_text']
     poster = self.user
 
     if self.method == 'POST':
         form = DocumentForm(self.POST, self.FILES)
-        p=None
+        p = None
 
         if form.is_valid():
             newdoc = Document(docfile=self.FILES['docfile'])
             newdoc.save()
-            p = Post(poster=poster, text=text, file=newdoc.docfile.__str__())
+            p = Post(poster=poster, text=text, file='/media/' + newdoc.docfile.__str__())
         else:
             p = Post(poster=poster, text=text)
         p.save()
@@ -85,6 +120,7 @@ def new_post(self):
     return render_to_response(
         'list.html',
         {'documents': documents, 'form': form},
+        # {'form': form},
         context_instance=RequestContext(self)
     )
 
@@ -96,6 +132,7 @@ class DocumentForm(forms.Form):
     )
 
 
+@login_required
 def del_post(self, post_id):
     post_to_delete = Post.objects.get(pk=post_id)
     if post_to_delete.poster.pk is self.user.id:
@@ -104,6 +141,7 @@ def del_post(self, post_id):
     return HttpResponseRedirect(reverse('index'))
 
 
+@login_required
 def change_post(self, post_id):
     post_to_change = Post.objects.get(pk=post_id)
     a = 'change_text' + post_id
@@ -164,6 +202,7 @@ def list(self):
     )
 
 
+@login_required
 def friends(self):
     user = self.user
     a = user.userinfo.friend_list.split(",")
@@ -181,6 +220,7 @@ def friends(self):
     )
 
 
+@login_required
 def add_friend(self, user_name):
     friend = User.objects.get(username=user_name)
     if self.method == 'POST':
@@ -235,3 +275,38 @@ def search(self):
         {'searchresults': found_users},
         context_instance=RequestContext(self)
     )
+
+
+@login_required
+def like(self, post_id):
+    post = Post.objects.get(pk=post_id)
+    liked_list = str(post.liked_list).split(',')
+
+    if liked_list.__contains__(str(self.user.id)):
+        liked_list.remove(str(self.user.id))
+        post.liked_list = list_to_commaseperated_field(liked_list)
+    else:
+        post.liked_list += str(",") + str(self.user.id)
+    post.save()
+    return HttpResponse("")
+
+
+def list_to_commaseperated_field(liked_list):
+    field = ""
+    for a in liked_list:
+        field += ',' + str(a)
+    return field
+
+
+@login_required
+def has_liked(self, post_id):
+    post = Post.objects.get(pk=post_id)
+    have_liked = str(post.liked_list).split(',')
+    response_data = {'hasliked': have_liked.__contains__(str(self.user.id))}  # add the list of people that have liked
+    return JsonResponse(response_data)
+
+
+def logout_view(self):
+    logout(self)
+    # return redirect('login')
+    return HttpResponseRedirect(reverse('login'))
