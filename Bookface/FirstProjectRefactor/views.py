@@ -22,7 +22,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.contrib import auth
+from django import template
+from datetime import date, timedelta
 
+register = template.Library()
 logger = logging.getLogger(__name__)
 
 items_per_page = 5
@@ -33,6 +36,13 @@ items_per_page = 5
 # def start(self):
 #     if not self.user.is_authenticated():
 #         return HttpResponseRedirect(reverse('index'))
+
+@register.filter(name='ends_with')
+def ends_with(value,arg):
+    if str(value).lower().endswith():
+        return 1
+    else:
+        return 0
 
 
 @login_required
@@ -221,15 +231,17 @@ def list(self):
     )
 
 
+from sets import Set
+
 @login_required
 def friends(self):
     user = self.user
     a = user.userinfo.friend_list.split(",")
-
-    friends = []
+    friends = Set([])
 
     for id in a:
-        friends.append(User.objects.get(pk=id))
+        if str(id) != '':
+            friends.add(User.objects.get(pk=id))
 
     # Render list page with the documents and the form
     return render_to_response(
@@ -249,6 +261,23 @@ def add_friend(self, user_name):
             user.userinfo.save()
 
             return HttpResponseRedirect(reverse('friends'))
+
+
+@login_required
+def remove_friend(self, user_name):
+    user = self.user
+    a = user.userinfo.friend_list.split(",")
+    friends = Set(a)
+    friend = User.objects.get(username=user_name)
+    friends.remove(str(friend.id))
+
+    new_friends_list = ""
+    for a in friends:
+        new_friends_list+= "," + a
+    user.userinfo.friend_list = new_friends_list
+    user.userinfo.save()
+
+    return HttpResponseRedirect(reverse('friends'))
 
 
 def profile(self, user_name):
@@ -275,9 +304,13 @@ def profile(self, user_name):
     elif self.user.id is friend.id:
         form = DocumentForm()
 
+    is_friend = 0;
+    if Set(self.user.userinfo.friend_list.split(',')).__contains__(str(friend.id)):
+        is_friend=1
+
     return render_to_response(
         'profile.html',
-        {'user': friend, 'form': form},
+        {'profile': friend, 'form': form, 'is_friend': is_friend},
         context_instance=RequestContext(self)
     )
 

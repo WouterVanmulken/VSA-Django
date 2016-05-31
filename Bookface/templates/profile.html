@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    {% if user %}
+    {% if profile %}
         <div style="background: white; padding: 16px">
             {% if form %}
-                <form action="{% url 'profile' user.username %}" method="POST" enctype="multipart/form-data"
+                <form action="{% url 'profile' profile.username %}" method="POST" enctype="multipart/form-data"
                       class="form-group">
                     {% csrf_token %}
                     <br>
@@ -37,25 +37,33 @@
 
                 </form>
             {% else %}
-                <form action="{% url 'add_friend' user.username %}" method="POST" class="form-group">
-                    {% csrf_token %}
-                    <ul>
+                {% if is_friend == 0 %}
+                    <form action="{% url 'add_friend' profile.username %}" method="POST" class="form-group">
+                {% else %}
+                    <form action="{% url 'remove_friend' profile.username %}" method="POST" class="form-group">
+                {% endif %}
+            {% csrf_token %}
+            <ul>
 
-                        <H1>{{ user.username }}</H1>
-                        <br/>
-                        <H5>E-mail : {{ user.email }}</H5>
-                        <br/>
-                        <H5>First Name : {{ user.first_name }}</H5>
-                        <br/>
-                        <H5>Last Name : {{ user.last_name }}</H5>
-                    </ul>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
+                <H1>{{ profile.username }}</H1>
+                <br/>
+                <H5>E-mail : {{ profile.email }}</H5>
+                <br/>
+                <H5>First Name : {{ profile.first_name }}</H5>
+                <br/>
+                <H5>Last Name : {{ profile.last_name }}</H5>
+            </ul>
+            <br>
+            <br>
+            <br>
+            <br>
+            {% if is_friend == 0 %}
+                <input type="submit" value="add friend" class="btn btn-primary pull-right pad"/>
+            {% else %}
+                <input type="submit" value="remove friend" class="btn btn-danger pull-right pad"/>
+            {% endif %}
 
-                    <input type="submit" value="add friend" class="btn btn-danger pull-right pad"/>
-                </form>
+            </form>
             {% endif %}
             <br/>
             <br/>

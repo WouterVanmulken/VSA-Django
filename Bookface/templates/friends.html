@@ -1,16 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-        <div style="background: white; padding: 16px">
+    <div style="background: white; padding: 16px">
 
-   {% if friends %}
-        <ul>
-        {% for friend in friends %}
-            <li>{{ friend.username }}</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No friends.</p>
-    {% endif %}
-        </div>
+        {% if friends %}
+            {#        <ul>#}
+            {% for friend in friends %}
+                {#            <li>{{ friend.username }}</li>#}
+
+                <a href="{% url 'profile' friend.username %}">
+                    <div style="padding: 32px; margin:10px;background: white">
+                        <img src="{{ friend.userinfo.profile_pic }}" width="50px" height="50px"
+                             class="pull-left pad"
+                             style="margin: 5px;"/>
+                        <h5 class="pull-left" href="{% url 'profile' friend %}">{{ friend.userinfo }}</h5>
+                        <br>
+                    </div>
+                </a>
+            {% endfor %}
+            {#        </ul>#}
+        {% else %}
+            <p>No friends.</p>
+        {% endif %}
+    </div>
 {% endblock %}

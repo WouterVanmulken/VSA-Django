@@ -31,6 +31,7 @@ urlpatterns += [
     url(r'^search$', views.search, name='search'),
     url(r'^friends$', views.friends, name='friends'),
     url(r'^addfriend/(?P<user_name>[A-Za-z0-9]+)$', views.add_friend, name='add_friend'),
+    url(r'^removefriend/(?P<user_name>[A-Za-z0-9]+)$', views.remove_friend, name='remove_friend'),
     url(r'^profile/(?P<user_name>[A-Za-z0-9]+)$', views.profile, name='profile'),
 
     url(r'^(?P<page>[A-Za-z0-9]+)$', views.index3, name='aaa'),
