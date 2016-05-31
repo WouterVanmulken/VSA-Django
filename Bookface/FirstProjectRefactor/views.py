@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from django.contrib import auth
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,24 @@ def index2(self):
         'index.html',
         {'form': form, 'likes': likes, 'latest_post_list': Post.objects.order_by('-pub_date')[:page * items_per_page]},
         context_instance=RequestContext(self)
+    )
+
+
+@login_required
+def index3(self, page):
+    form = DocumentForm()
+    likes = []
+    for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
+        if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
+            likes.append(1)
+        else:
+            likes.append(0)
+
+    return render_to_response(
+        'index.html',
+        {'form': form, 'likes': likes, 'latest_post_list': Post.objects.order_by('-pub_date')[:page * items_per_page]
+            , 'page': page}
+        ,context_instance=RequestContext(self)
     )
 
 
@@ -307,6 +326,5 @@ def has_liked(self, post_id):
 
 
 def logout_view(self):
-    logout(self)
-    # return redirect('login')
+    auth.logout(self)
     return HttpResponseRedirect(reverse('login'))

@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div style="background: white; padding: 16px">
 
         {% if searchresults %}
-            <ul>
                 {% for person in searchresults %}
-                    <li><a href="{% url 'profile' person.username %}">{{ person.username }}</a></li>
+
+                    <a href="{% url 'profile' person.username %}">
+                        <div style="padding: 32px; margin:10px;background: white">
+                            <img src="{{ person.userinfo.profile_pic }}" width="50px" height="50px"
+                                 class="pull-left pad"
+                                 style="margin: 5px;"/>
+                            <h5 class="pull-left" href="{% url 'profile' person %}">{{ person.userinfo }}</h5>
+                            <br>
+                        </div>
+                    </a>
                 {% endfor %}
-            </ul>
         {% else %}
             <p>No user was found.</p>
         {% endif %}
-    </div>
 {% endblock %}

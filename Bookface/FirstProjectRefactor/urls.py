@@ -17,7 +17,7 @@ urlpatterns += [
     url(r'^new_post/', views.new_post, name='new_post'),
     url(r'^(?P<post_id>[0-9]+)/del_post/$', views.del_post, name='del_post'),
     url(r'^(?P<post_id>[0-9]+)/change_post/$', views.change_post, name='change_post'),
-    url(r'^login$', views.login_page.as_view(), name='login'),
+    url(r'^login/$', views.login_page.as_view(), name='login'),
     url(r'^logout$', views.logout_view, name='logout'),
     url(r'^loginpost/$', views.login_post, name='login_post'),
     url(r'^registration$', views.Registration.as_view(), name='registration'),
@@ -33,6 +33,6 @@ urlpatterns += [
     url(r'^addfriend/(?P<user_name>[A-Za-z0-9]+)$', views.add_friend, name='add_friend'),
     url(r'^profile/(?P<user_name>[A-Za-z0-9]+)$', views.profile, name='profile'),
 
-    # url(r'^', views.Index.as_view(), name='index'),
+    url(r'^(?P<page>[A-Za-z0-9]+)$', views.index3, name='aaa'),
     url(r'^', views.index2, name='index'),
 ]

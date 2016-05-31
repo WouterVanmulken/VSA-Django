@@ -126,7 +126,7 @@
                 {% endif %}
                 <h6 id="post_text{{ post.id }}">{{ post.text }}</h6><br/>
                 {% if post.file %}
-                    <img src="{{ post.file }}"/><br/><br/>
+                    <img src="{{ post.file }}" style="max-width:100%;max-height:100%;"/><br/><br/>
                 {% endif %}
 
                 <form action="{% url 'like' post.id %}" method="POST" class="form-group">
@@ -150,8 +150,13 @@
         {% endfor %}
 
         <ul class="pager">
-            <li class="previous"><a href="#">&larr; Newer</a></li>
-            <li class="next"><a href="#">Older &rarr;</a></li>
+            {{ page }}
+            {% if page > 1 %}
+                <li class="previous"><a href="{% url  'aaa' page|add:"-1" %}">&larr; Newer</a></li>
+                <li class="next"><a href="{% url  'aaa' page|add:"1" %}">Older &rarr;</a></li>
+            {% else %}
+                <li class="next"><a href="{% url  'aaa' page|add:"1" %}">Older &rarr;</a></li>
+            {% endif %}
         </ul>
     {% else %}
         <p>No posts were available.</p>
