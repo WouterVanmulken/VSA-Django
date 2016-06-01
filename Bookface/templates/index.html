@@ -71,8 +71,26 @@
                 }
             })
         }
-
-
+        function returnElementForTheJob(link, id) {
+            var images = ["jpeg", "jpg", "png", "gif"]
+            var video = ["webm"]
+            var returnValue = '';
+            for(i= 0; i < images.length; ++i){
+                if (link.indexOf(images[i], link.length - images[i].length) !== -1) {
+                    returnValue = "<img src=\"" + link + "\" style=\"max-width:100%;max-height:100%;\"/>"
+                }
+            }
+            for(i= 0; i < video.length; ++i){
+                if (link.indexOf(video[i], link.length - video[i].length) !== -1) {
+                    returnValue = "<video controls src=\"" + link + "\" style=\"max-width:100%;max-height:20%;\" type=\"video/" + i + "\"/>"
+                }
+            }
+            if (returnValue == '') {
+                returnValue = "<a href=\"" + link + "\">" + link + "</a>"
+            }
+            var div = '#mediadiv' + id;
+            $(div).html(returnValue);
+        }
 
 
     </script>
@@ -101,7 +119,7 @@
             <div style="padding: 32px; margin:10px;background: white">
                 <img src="{{ post.poster.userinfo.profile_pic }}" width="50px" height="50px" class="pull-left pad"
                      style="margin: 5px;"/>
-                <a href="{% url 'profile' post.poster %}"><h5 class="pull-left" >{{ post.poster.userinfo }}</h5></a>
+                <a href="{% url 'profile' post.poster %}"><h5 class="pull-left">{{ post.poster.userinfo }}</h5></a>
 
                 {% if user.id == post.poster.id %}
                     <form action="{% url 'del_post' post.id %}" method="POST" class="form-group">
@@ -127,24 +145,22 @@
 
                 {% endif %}
                 <h6 id="post_text{{ post.id }}">{{ post.text }}</h6><br/>
-                {% if post.file %}
-{#                    {% if {{  }}== "image" %}#}
-{#                    {% if post.file|ends_with:"jpg"%}#}
-{#                        <img src="{{ post.file }}" style="max-width:100%;max-height:100%;"/><br/><br/>#}
-{#                    {% elif get_video_image_file == "video" %}#}
-                        <video controls src="{{ post.file }}" style="max-width:100%;max-height:20%;" type="video/webm"/><br/><br/>
-{#                    {% elif get_video_image_file == "file" %}#}
-{#                        <a href="{{ post.file }}" /><br/><br/>#}
+                <div id="mediadiv{{ post.id }}">
+{#                {% if post.file %}#}
+                    <script type="text/javascript">
+                            returnElementForTheJob('{{ post.file }}', {{ post.id }});
+                    </script>
+                    <br/>
+                    <br/>
 {#                    {% endif %}#}
-                {% endif %}
-
+                </div>
                 <form action="{% url 'like' post.id %}" method="POST" class="form-group">
 
                     {% csrf_token %}
                     <input type="button" value="Like" class="btn btn-default pull-left" id="like{{ post.id }}"
-                           onclick="like_post({{ post.id }})" />
+                           onclick="like_post({{ post.id }})"/>
                     <input type="button" value="UnLike" class="btn btn-default pull-left" id="unlike{{ post.id }}"
-                           onclick="like_post({{ post.id }})" />
+                           onclick="like_post({{ post.id }})"/>
                     <h7 class="pull-right">{{ post.pub_date }}</h7>
 
                 </form>
@@ -152,7 +168,6 @@
 
                 <script type="text/javascript">
                     has_liked({{ post.id }});
-
                 </script>
             </div>
 
