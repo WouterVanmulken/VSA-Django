@@ -12,6 +12,7 @@ class Post(models.Model):
     file = models.CharField(max_length=400)
     pub_date = models.DateTimeField('date published', default=timezone.now)
     liked_list = models.CommaSeparatedIntegerField(max_length=200, default="")
+    nr_of_likes = models.IntegerField(default=0)
 
     def was_published_recently(self):
         return self.pub_date >= timezone.now()- datetime.timedelta(days=1)

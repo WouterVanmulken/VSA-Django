@@ -15,7 +15,9 @@
             }
         }
         function has_liked(post_id) {
-
+            if (post_id ==null || post_id ==""){
+                return;
+            }
             var url = "{% url  'has_liked' 1%}";
             url = url.replace('1', post_id)
 
@@ -60,11 +62,17 @@
                 },
                 success: function () {
                     if (document.getElementById('like' + post_id).style.display == "block") {
+                        var nrLikes = parseInt(document.getElementById('nr_post_likes_' + post_id).innerHTML)
+                        nrLikes+= 1;
+                        document.getElementById('nr_post_likes_' + post_id).innerHTML = nrLikes
 
                         document.getElementById('unlike' + post_id).style.display = "block";
                         document.getElementById('like' + post_id).style.display = "none";
                     }
                     else {
+                        var nrLikes = parseInt(document.getElementById('nr_post_likes_' + post_id).innerHTML)
+                        nrLikes-= 1;
+                        document.getElementById('nr_post_likes_' + post_id).innerHTML = nrLikes
                         document.getElementById('unlike' + post_id).style.display = "none";
                         document.getElementById('like' + post_id).style.display = "block";
                     }
@@ -86,7 +94,7 @@
                 }
             }
             if (returnValue == '') {
-                returnValue = "<a href=\"" + link + "\">" + link + "</a>"
+                returnValue = "<a href=\"" + link + "\" download>" + link + "</a>"
             }
             var div = '#mediadiv' + id;
             $(div).html(returnValue);
@@ -158,13 +166,13 @@
 
                     {% csrf_token %}
                     <input type="button" value="Like" class="btn btn-default pull-left" id="like{{ post.id }}"
-                           onclick="like_post({{ post.id }})"/>
+                           onclick="like_post({{ post.id }})" style="display: none;"/>
                     <input type="button" value="UnLike" class="btn btn-default pull-left" id="unlike{{ post.id }}"
-                           onclick="like_post({{ post.id }})"/>
+                           onclick="like_post({{ post.id }})" style="display: none;"/>
                     <h7 class="pull-right">{{ post.pub_date }}</h7>
-
+                    <div >  &nbsp;  <span id="nr_post_likes_{{ post.id }}">{{ post.nr_of_likes }}</span> Likes</div>
                 </form>
-                <br>
+{#                <br>#}
 
                 <script type="text/javascript">
                     has_liked({{ post.id }});
@@ -175,7 +183,7 @@
 
         <ul class="pager">
             {{ page }}
-            {% if page > 1 %}
+            {% if page > 1  %}
                 <li class="previous"><a href="{% url  'aaa' page|add:"-1" %}">&larr; Newer</a></li>
                 <li class="next"><a href="{% url  'aaa' page|add:"1" %}">Older &rarr;</a></li>
             {% else %}
