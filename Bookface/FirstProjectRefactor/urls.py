@@ -34,6 +34,6 @@ urlpatterns += [
     url(r'^removefriend/(?P<user_name>[A-Za-z0-9]+)$', views.remove_friend, name='remove_friend'),
     url(r'^profile/(?P<user_name>[A-Za-z0-9]+)$', views.profile, name='profile'),
 
-    url(r'^(?P<page>[A-Za-z0-9]+)$', views.index3, name='aaa'),
-    url(r'^', views.index2, name='index'),
+    url(r'^(?P<page>[A-Za-z0-9]+)$', views.index, name='aaa'),
+    url(r'^', views.index_without_page, name='index'),
 ]

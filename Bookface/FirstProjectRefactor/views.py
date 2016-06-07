@@ -38,7 +38,7 @@ items_per_page = 5
 #         return HttpResponseRedirect(reverse('index'))
 
 @register.filter(name='ends_with')
-def ends_with(value,arg):
+def ends_with(value, arg):
     if str(value).lower().endswith():
         return 1
     else:
@@ -46,55 +46,14 @@ def ends_with(value,arg):
 
 
 @login_required
-class Index(generic.ListView):
-    template_name = '../../Bookface/templates/index.html'
-    context_object_name = 'latest_post_list'
-
-    def get_queryset(self):
-        page = 1
-        return Post.objects.order_by('-pub_date')[:page * items_per_page]
-
-    def get_context_data(self, **kwargs):
-        page = 1
-        context = super(Index, self).get_context_data(**kwargs)
-        context['form'] = DocumentForm()
-        likes = []
-        for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
-            if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
-                likes.append(1)
-            else:
-                likes.append(0)
-        context['likes'] = likes
-        return context
+def index_without_page(self):
+    return index(self, 0)
 
 
 @login_required
-def index2(self):
-    page = 1
+def index(self, page):
     form = DocumentForm()
     likes = []
-    for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
-        if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
-            likes.append(1)
-        else:
-            likes.append(0)
-
-    return render_to_response(
-        'index.html',
-        {'form': form, 'likes': likes, 'latest_post_list': Post.objects.order_by('-pub_date')[:page * items_per_page]},
-        context_instance=RequestContext(self)
-    )
-
-
-@login_required
-def index3(self, page):
-    form = DocumentForm()
-    likes = []
-    # for post in Post.objects.order_by('-pub_date')[:page * items_per_page]:
-    #     if Like.objects.filter(post_id=post.id, user=self.user).count() > 0:
-    #         likes.append(1)
-    #     else:
-    #         likes.append(0)
 
     return render_to_response(
         'index.html',
@@ -105,11 +64,11 @@ def index3(self, page):
                  '-pub_date')
              [
 
-                 (int(page) * items_per_page)
+             (int(page) * items_per_page)
              :
-             ((int(page) * items_per_page)+5)]
+             ((int(page) * items_per_page) + 5)]
             , 'page': int(page)}
-        ,context_instance=RequestContext(self)
+        , context_instance=RequestContext(self)
     )
 
 
@@ -239,6 +198,7 @@ def list(self):
         context_instance=RequestContext(self)
     )
 
+
 @login_required
 def friends(self):
     user = self.user
@@ -279,7 +239,7 @@ def remove_friend(self, user_name):
 
     new_friends_list = ""
     for a in friends:
-        new_friends_list+= "," + a
+        new_friends_list += "," + a
     user.userinfo.friend_list = new_friends_list
     user.userinfo.save()
 
@@ -312,7 +272,7 @@ def profile(self, user_name):
 
     is_friend = 0;
     if set(self.user.userinfo.friend_list.split(',')).__contains__(str(friend.id)):
-        is_friend=1
+        is_friend = 1
 
     return render_to_response(
         'profile.html',
@@ -343,10 +303,10 @@ def like(self, post_id):
     if liked_list.__contains__(str(self.user.id)):
         liked_list.remove(str(self.user.id))
         post.liked_list = list_to_commaseperated_field(liked_list)
-        post.nr_of_likes -=1
+        post.nr_of_likes -= 1
     else:
         post.liked_list += str(",") + str(self.user.id)
-        post.nr_of_likes +=1;
+        post.nr_of_likes += 1;
     post.save()
     return HttpResponse("")
 
